@@ -1,6 +1,7 @@
 Installation Requirements:
 To use this tool, you need to install the following dependencies:
 
+# bash
 pip install beautifulsoup4 python-docx PyPDF2 requests
 
 Usage Examples:
