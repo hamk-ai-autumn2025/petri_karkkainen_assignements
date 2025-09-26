@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starforge Props - Premium Film Props Rental</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Animated starfield background */
+        .starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0c0c1e 0%, #1a1a3e 50%, #2d1b69 100%);
+            z-index: -2;
+        }
+
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(1px 1px at 17px 31px, #fff, transparent),
+                radial-gradient(2px 2px at 89px 7px, rgba(255,255,255,0.9), transparent),
+                radial-gradient(1px 1px at 156px 73px, #eee, transparent),
+                radial-gradient(1px 1px at 23px 147px, rgba(255,255,255,0.7), transparent),
+                radial-gradient(2px 2px at 134px 189px, #fff, transparent),
+                radial-gradient(1px 1px at 67px 23px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 189px 134px, #fff, transparent),
+                radial-gradient(2px 2px at 45px 67px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(1px 1px at 12px 89px, #eee, transparent),
+                radial-gradient(1px 1px at 178px 156px, rgba(255,255,255,0.9), transparent),
+                radial-gradient(2px 2px at 98px 12px, #fff, transparent),
+                radial-gradient(1px 1px at 156px 45px, rgba(255,255,255,0.7), transparent),
+                radial-gradient(1px 1px at 34px 178px, #fff, transparent),
+                radial-gradient(2px 2px at 167px 89px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 78px 134px, #eee, transparent),
+                radial-gradient(1px 1px at 123px 67px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(2px 2px at 189px 23px, #fff, transparent),
+                radial-gradient(1px 1px at 45px 156px, rgba(255,255,255,0.9), transparent),
+                radial-gradient(1px 1px at 12px 45px, #fff, transparent),
+                radial-gradient(2px 2px at 134px 12px, rgba(255,255,255,0.7), transparent);
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            animation: twinkle 3s ease-in-out infinite alternate, drift 20s linear infinite;
+        }
+
+        @keyframes drift {
+            0% { transform: translateX(0) translateY(0); }
+            25% { transform: translateX(-10px) translateY(-5px); }
+            50% { transform: translateX(5px) translateY(-10px); }
+            75% { transform: translateX(-5px) translateY(5px); }
+            100% { transform: translateX(0) translateY(0); }
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        /* Header logo */
+        .logo-container {
+            text-align: center;
+            margin: 2rem 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo-ring {
+            width: 150px;
+            height: 150px;
+            border: 3px solid rgba(255, 215, 0, 0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .logo-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+        }
+
+        /* Picture placeholder */
+        .picture-placeholder-container {
+            text-align: center;
+            margin: 1rem 0 0; /* Reduced top margin and removed bottom margin */
+            padding: 0 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .picture-placeholder {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            height: 300px;
+        }
+
+        .picture-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .placeholder-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .placeholder-text i {
+            font-size: 2rem;
+            color: #ffd700;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .placeholder-text p {
+            margin: 0.5rem 0;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .placeholder-text small {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(0, 0, 0, 0.8) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ffd700 !important;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .navbar-nav .nav-link {
+            color: #ffffff !important;
+            font-weight: 500;
+            margin: 0 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #ffd700 !important;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.7);
+        }
+
+        /* Hero section - reduced spacing */
+        .hero-section {
+            min-height: 60vh; /* Reduced height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+            padding: 2rem 0; /* Reduced padding */
+        }
+
+        .hero-content {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 2rem; /* Reduced padding */
+            border-radius: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(10px);
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Cdefs%3E%3CradialGradient id='planet1' cx='40%25' cy='40%25'%3E%3Cstop offset='0%25' stop-color='%23ff6b35'/%3E%3Cstop offset='70%25' stop-color='%23d63031'/%3E%3Cstop offset='100%25' stop-color='%23741b47'/%3E%3C/radialGradient%3E%3CradialGradient id='planet2' cx='30%25' cy='30%25'%3E%3Cstop offset='0%25' stop-color='%23ffd700'/%3E%3Cstop offset='60%25' stop-color='%23f39c12'/%3E%3Cstop offset='100%25' stop-color='%23e67e22'/%3E%3C/radialGradient%3E%3CradialGradient id='planet3' cx='50%25' cy='50%25'%3E%3Cstop offset='0%25' stop-color='%2374b9ff'/%3E%3Cstop offset='80%25' stop-color='%230984e3'/%3E%3Cstop offset='100%25' stop-color='%232d3436'/%3E%3C/radialGradient%3E%3ClinearGradient id='rocket' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23ddd'/%3E%3Cstop offset='50%25' stop-color='%23999'/%3E%3Cstop offset='100%25' stop-color='%23666'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg opacity='0.25'%3E%3Ccircle cx='120' cy='100' r='70' fill='url(%23planet1)'/%3E%3Cellipse cx='120' cy='100' rx='90' ry='10' fill='%23ffffff' opacity='0.15'/%3E%3Ccircle cx='680' cy='480' r='45' fill='url(%23planet2)'/%3E%3Cellipse cx='680' cy='480' rx='60' ry='7' fill='%23ffffff' opacity='0.12'/%3E%3Ccircle cx='600' cy='150' r='25' fill='url(%23planet3)'/%3E%3Cellipse cx='600' cy='150' rx='35' ry='4' fill='%23ffffff' opacity='0.1'/%3E%3Cpath d='M50,300 Q200,250 350,300 T650,300' stroke='%23ffd700' stroke-width='2' fill='none' opacity='0.3'/%3E%3Cpath d='M100,400 Q300,350 500,400 T800,400' stroke='%23ff6b35' stroke-width='1.5' fill='none' opacity='0.25'/%3E%3Cpath d='M0,200 Q150,180 300,200 T600,200' stroke='%2374b9ff' stroke-width='1' fill='none' opacity='0.2'/%3E%3Cpolygon points='400,40 415,85 460,85 430,110 445,155 400,130 355,155 370,110 340,85 385,85' fill='%23ffd700' opacity='0.4'/%3E%3Cpolygon points='650,180 658,200 678,200 665,215 673,235 650,225 627,235 635,215 622,200 642,200' fill='%23ffffff' opacity='0.3'/%3E%3Cpolygon points='180,450 188,470 208,470 195,485 203,505 180,495 157,505 165,485 152,470 172,470' fill='%23ffd700' opacity='0.35'/%3E%3Cpath d='M200,520 L230,490 L260,520 L230,550 Z' fill='%23ffd700' opacity='0.3'/%3E%3Cpath d='M500,350 L520,330 L540,350 L520,370 Z' fill='%23ffffff' opacity='0.25'/%3E%3Cpath d='M300,180 L315,165 L330,180 L315,195 Z' fill='%2374b9ff' opacity='0.3'/%3E%3Cpolygon points='450,250 465,240 480,250 475,265 490,275 475,270 460,280 465,265 450,255' fill='%23ff6b35' opacity='0.2'/%3E%3Cpath d='M350,450 Q380,430 410,450 Q440,470 470,450' stroke='%23ffd700' stroke-width='1' fill='none' opacity='0.2'/%3E%3Cpath d='M550,300 Q580,280 610,300 Q640,320 670,300' stroke='%2374b9ff' stroke-width='1' fill='none' opacity='0.15'/%3E%3Cg transform='translate(700,350) rotate(45)'%3E%3Crect x='-15' y='-3' width='30' height='6' fill='url(%23rocket)' opacity='0.4'/%3E%3Cpolygon points='-15,-3 -25,0 -15,3' fill='%23ff6b35' opacity='0.3'/%3E%3Cpolygon points='15,-2 20,0 15,2' fill='%23ffd700' opacity='0.5'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+            animation: heroBackgroundFloat 25s ease-in-out infinite;
+        }
+
+        @keyframes heroBackgroundFloat {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-20px, -10px) rotate(1deg); }
+            50% { transform: translate(10px, -20px) rotate(-1deg); }
+            75% { transform: translate(-10px, 10px) rotate(0.5deg); }
+        }
+
+        .hero-title {
+            font-size: 2.5rem; /* Reduced font size */
+            font-weight: bold;
+            margin-bottom: 0.5rem; /* Reduced margin */
+            background: linear-gradient(45deg, #ffd700, #ffffff, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+
+        .hero-slogan {
+            font-size: 1.2rem; /* Reduced font size */
+            color: #ffd700;
+            margin-bottom: 1rem; /* Reduced margin */
+            font-style: italic;
+        }
+
+        .hero-description {
+            font-size: 1rem; /* Reduced font size */
+            line-height: 1.5; /* Reduced line height */
+            margin-bottom: 1rem; /* Reduced margin */
+            color: #e0e0e0;
+        }
+
+        .cta-button {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            border: none;
+            color: #000;
+            font-weight: bold;
+            padding: 0.8rem 1.5rem; /* Reduced padding */
+            font-size: 1rem; /* Reduced font size */
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
+            color: #000;
+        }
+
+        /* Features section */
+        .features-section {
+            padding: 3rem 0; /* Reduced padding */
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem; /* Reduced padding */
+            text-align: center;
+            height: 100%;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: #ffd700;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem; /* Reduced size */
+            color: #ffd700;
+            margin-bottom: 0.8rem; /* Reduced margin */
+        }
+
+        .feature-title {
+            font-size: 1.3rem; /* Reduced size */
+            font-weight: bold;
+            margin-bottom: 0.8rem; /* Reduced margin */
+            color: #ffd700;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 2rem 0 1rem; /* Reduced padding */
+            border-top: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .footer-content {
+            text-align: center;
+        }
+
+        .social-links a {
+            color: #ffd700;
+            font-size: 1.3rem; /* Reduced size */
+            margin: 0 0.8rem; /* Reduced margin */
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-slogan {
+                font-size: 1rem;
+            }
+
+            .hero-description {
+                font-size: 0.9rem;
+            }
+
+            .hero-content {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .logo-ring {
+                width: 120px;
+                height: 120px;
+            }
+
+            .logo-image {
+                width: 100px;
+                height: 100px;
+            }
+
+            .picture-placeholder {
+                height: 200px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-title {
+                font-size: 1.7rem;
+            }
+
+            .navbar-brand {
+                font-size: 1.4rem;
+            }
+
+            .picture-placeholder {
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated starfield background -->
+    <div class="starfield">
+        <div class="stars"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#home">
+                <i class="fas fa-star me-2"></i>Starforge Props
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#products">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#services">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#gallery">Gallery</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Logo -->
+    <div class="logo-container" style="margin-top: 100px;">
+        <div class="logo-ring">
+            <img src="/mnt/Varasto/Koulu/T/Tekoälytyökalut/Tehtävä_19/SterForge-logo-720.png"
+                 alt="Starforge Props Logo"
+                 class="logo-image"
+                 onerror="this.style.display='none';">
+        </div>
+    </div>
+
+    <!-- Picture Placeholder -->
+    <div class="picture-placeholder-container">
+        <div class="picture-placeholder">
+            <img src="/mnt/Varasto/Koulu/T/Tekoälytyökalut/Tehtävä_19/StarForge.jpg"
+                 alt="Starforge Props Gallery"
+                 onerror="this.parentElement.innerHTML='<div class=\'placeholder-text\'><i class=\'fas fa-image\'></i><p>Image Placeholder</p><small>600px × 300px</small></div>';">
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">STARFORGE PROPS</h1>
+                <p class="hero-slogan">"Forging Dreams into Reality"</p>
+                <p class="hero-description">
+                    Transform your film vision with our premium collection of professional props and set pieces.
+                    From futuristic sci-fi elements to period-authentic artifacts, we provide the tools that bring
+                    your stories to life. Trusted by major studios and independent filmmakers alike.
+                </p>
+                <button class="btn cta-button" onclick="document.getElementById('about').scrollIntoView({behavior: 'smooth'})">
+                    <i class="fas fa-rocket me-2"></i>Explore Our Universe
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="about" class="features-section">
+        <div class="container">
+            <div class="row text-center mb-4"> <!-- Reduced margin -->
+                <div class="col-12">
+                    <h2 class="display-5 text-white mb-3">Why Choose Starforge Props?</h2> <!-- Reduced size -->
+                    <p class="text-light">Professional-grade props that elevate your production value</p>
+                </div>
+            </div>
+            <div class="row g-3"> <!-- Reduced gap -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="feature-title">About Us</h3>
+                        <p>Founded by industry veterans with over 20 years of experience in film production and prop design.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-box-open"></i>
+                        </div>
+                        <h3 class="feature-title">Products</h3>
+                        <p>Extensive inventory of sci-fi weapons, period furniture, vehicles, and custom-built specialty items.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <h3 class="feature-title">Services</h3>
+                        <p>Full-service rental, custom fabrication, on-set support, and prop maintenance throughout your shoot.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-images"></i>
+                        </div>
+                        <h3 class="feature-title">Gallery</h3>
+                        <p>Browse our showcase of props featured in blockbuster films, TV series, and award-winning productions.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="row">
+                    <div class="col-12 text-center mb-3"> <!-- Reduced margin -->
+                        <h4 class="text-warning mb-2">Ready to Start Your Next Production?</h4> <!-- Reduced margin -->
+                        <p class="mb-3">Contact us today for a consultation and bring your creative vision to life.</p> <!-- Reduced margin -->
+                        <div class="social-links">
+                            <a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook"></i></a>
+                            <a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+                            <a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
+                            <a href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <hr class="border-warning">
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <p class="mb-0">&copy; 2024 Starforge Props. All rights reserved. | Forging Dreams into Reality</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add navbar background on scroll
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.background = 'rgba(0, 0, 0, 0.95)';
+            } else {
+                navbar.style.background = 'rgba(0, 0, 0, 0.8)';
+            }
+        });
+    </script>
+</body>
+</html>
