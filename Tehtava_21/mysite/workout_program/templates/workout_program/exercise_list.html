@@ -1,0 +1,63 @@
+{% extends 'workout_program/base.html' %}
+
+{% block title %}Exercise Library{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Exercise Library</h1>
+    <form method="GET" class="d-flex">
+        <input type="text" name="search" class="form-control me-2" placeholder="Search exercises...">
+        <button type="submit" class="btn btn-outline-primary">Search</button>
+    </form>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h5>Filter by Muscle Group</h5>
+        <div class="btn-group flex-wrap" role="group">
+            <a href="?muscle_group=" class="btn btn-outline-secondary {% if not current_muscle_group %}active{% endif %}">All Groups</a>
+            {% for group in muscle_groups %}
+            <a href="?muscle_group={{ group.id }}" class="btn btn-outline-secondary {% if current_muscle_group == group.id|stringformat:"s" %}active{% endif %}">{{ group.name }}</a>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-6">
+        <h5>Filter by Type</h5>
+        <div class="btn-group flex-wrap" role="group">
+            <a href="?type=" class="btn btn-outline-secondary {% if not current_type %}active{% endif %}">All Types</a>
+            {% for type_code, type_name in exercise_types %}
+            <a href="?type={{ type_code }}" class="btn btn-outline-secondary {% if current_type == type_code %}active{% endif %}">{{ type_name }}</a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    {% for exercise in exercises %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ exercise.name }}</h5>
+                <p class="card-text">{{ exercise.description|truncatewords:15 }}</p>
+
+                <div class="mb-2">
+                    <span class="badge bg-primary">{{ exercise.get_exercise_type_display }}</span>
+                    {% if exercise.muscle_group %}
+                    <span class="badge bg-info">{{ exercise.muscle_group.name }}</span>
+                    {% endif %}
+                    <span class="badge bg-warning text-dark">Level {{ exercise.difficulty_level }}</span>
+                </div>
+
+                {% if exercise.equipment_needed %}
+                <p class="small text-muted"><strong>Equipment:</strong> {{ exercise.equipment_needed }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <p class="text-center">No exercises found.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

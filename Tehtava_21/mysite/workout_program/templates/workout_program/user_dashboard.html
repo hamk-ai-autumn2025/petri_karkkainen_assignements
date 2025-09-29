@@ -1,0 +1,72 @@
+{% extends 'workout_program/base.html' %}
+
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+<h1>User Dashboard</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Recent Workout Logs</h5>
+            </div>
+            <div class="card-body">
+                {% for log in workout_logs %}
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>{{ log.workout_session.exercise.name }}</strong>
+                            <br>
+                            <small class="text-muted">
+                                {{ log.completed_at|date:"M d, Y H:i" }} |
+                                Program: {{ log.program.name }}
+                            </small>
+                        </div>
+                        <div class="text-end">
+                            {% if log.completed_sets %}
+                            {{ log.completed_sets }}x{{ log.completed_reps }}
+                            {% if log.completed_weight_kg %}
+                            @ {{ log.completed_weight_kg }}kg
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p>No workout logs yet. Start by completing some workouts!</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Statistics</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Total Workouts Completed:</strong> {{ completed_workouts }}</p>
+                <p><strong>Active Programs:</strong> {{ active_programs.count }}</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5>Active Programs</h5>
+            </div>
+            <div class="card-body">
+                {% for program in active_programs %}
+                <div class="mb-2">
+                    <a href="{% url 'program_detail' program.id %}">{{ program.name }}</a>
+                    <br>
+                    <small class="text-muted">{{ program.get_program_type_display }}</small>
+                </div>
+                {% empty %}
+                <p>No active programs. Browse <a href="{% url 'program_list' %}">workout programs</a> to get started!</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

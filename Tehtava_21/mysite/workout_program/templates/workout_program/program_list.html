@@ -1,0 +1,83 @@
+{% extends 'workout_program/base.html' %}
+
+{% block title %}Workout Programs{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Workout Programs</h1>
+    <form method="GET" class="d-flex">
+        <input type="text" name="search" class="form-control me-2" placeholder="Search programs..."
+               value="{{ search_query }}">
+        <button type="submit" class="btn btn-outline-primary">Search</button>
+    </form>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="btn-group" role="group">
+            <a href="?type=" class="btn btn-outline-secondary {% if not current_type %}active{% endif %}">All Types</a>
+            {% for type_code, type_name in program_types %}
+            <a href="?type={{ type_code }}" class="btn btn-outline-secondary {% if current_type == type_code %}active{% endif %}">{{ type_name }}</a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    {% for program in page_obj %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card workout-card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ program.name }}</h5>
+                <p class="card-text">{{ program.description|truncatewords:25 }}</p>
+                <div class="mb-2">
+                    <span class="badge bg-primary">{{ program.get_program_type_display }}</span>
+                    <span class="badge bg-secondary">Level {{ program.difficulty_level }}</span>
+                </div>
+                <p class="text-muted">
+                    Duration: {{ program.duration_weeks }} weeks
+                </p>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'program_detail' program.id %}" class="btn btn-primary">View Details</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <p class="text-center">No workout programs found.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if page_obj.has_other_pages %}
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+            {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

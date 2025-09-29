@@ -1,0 +1,71 @@
+{% extends 'workout_program/base.html' %}
+
+{% block title %}{{ workout_day.day_name }} - {{ workout_day.program.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'program_list' %}">Programs</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'program_detail' workout_day.program.id %}">{{ workout_day.program.name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ workout_day.day_name }}</li>
+            </ol>
+        </nav>
+
+        <h1>{{ workout_day.day_name }}</h1>
+        <p class="lead">{{ workout_day.description }}</p>
+
+        <h3>Workout Sessions</h3>
+        {% for session in workout_sessions %}
+        <div class="card mb-3 exercise-item">
+            <div class="card-body">
+                <h5 class="card-title">{{ session.exercise.name }}</h5>
+                <p class="card-text">{{ session.exercise.description }}</p>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Sets:</strong> {{ session.sets }}</p>
+                        <p><strong>Reps:</strong> {{ session.repetitions }}</p>
+                        {% if session.weight_kg %}
+                        <p><strong>Weight:</strong> {{ session.weight_kg }} kg</p>
+                        {% endif %}
+                        {% if session.duration_minutes %}
+                        <p><strong>Duration:</strong> {{ session.duration_minutes }} minutes</p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Rest:</strong> {{ session.rest_seconds }} seconds</p>
+                        <p><strong>Type:</strong> {{ session.exercise.get_exercise_type_display }}</p>
+                        {% if session.exercise.muscle_group %}
+                        <p><strong>Muscle Group:</strong> {{ session.exercise.muscle_group.name }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if user.is_authenticated %}
+                <div class="mt-3">
+                    <a href="{% url 'log_workout' session.id %}" class="btn btn-success">Log This Workout</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <p>No workout sessions available for this day.</p>
+        {% endfor %}
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Day Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Program:</strong> {{ workout_day.program.name }}</p>
+                <p><strong>Day Number:</strong> {{ workout_day.day_number }}</p>
+                <p><strong>Type:</strong> {{ workout_day.program.get_program_type_display }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

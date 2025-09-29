@@ -1,0 +1,99 @@
+{% extends 'workout_program/base.html' %}
+
+{% block title %}Log Workout{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'program_list' %}">Programs</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'program_detail' workout_session.workout_day.program.id %}">{{ workout_session.workout_day.program.name }}</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'workout_day_detail' workout_session.workout_day.program.id workout_session.workout_day.id %}">{{ workout_session.workout_day.day_name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Log Workout</li>
+            </ol>
+        </nav>
+
+        <h1>Log Workout: {{ workout_session.exercise.name }}</h1>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Exercise Details</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Program:</strong> {{ workout_session.workout_day.program.name }}</p>
+                <p><strong>Day:</strong> {{ workout_session.workout_day.day_name }}</p>
+                <p><strong>Exercise:</strong> {{ workout_session.exercise.name }}</p>
+                <p><strong>Sets:</strong> {{ workout_session.sets }}</p>
+                <p><strong>Reps:</strong> {{ workout_session.repetitions }}</p>
+                {% if workout_session.weight_kg %}
+                <p><strong>Weight:</strong> {{ workout_session.weight_kg }} kg</p>
+                {% endif %}
+                {% if workout_session.duration_minutes %}
+                <p><strong>Duration:</strong> {{ workout_session.duration_minutes }} minutes</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="card">
+                <div class="card-header">
+                    <h5>Log Your Performance</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="completed_sets" class="form-label">Completed Sets</label>
+                                <input type="number" class="form-control" id="completed_sets" name="completed_sets" min="0" max="{{ workout_session.sets }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="completed_reps" class="form-label">Completed Reps per Set</label>
+                                <input type="number" class="form-control" id="completed_reps" name="completed_reps" min="0" max="{{ workout_session.repetitions }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if workout_session.weight_kg %}
+                    <div class="mb-3">
+                        <label for="completed_weight" class="form-label">Weight Used (kg)</label>
+                        <input type="number" step="0.1" class="form-control" id="completed_weight" name="completed_weight" placeholder="e.g., {{ workout_session.weight_kg }}">
+                    </div>
+                    {% endif %}
+
+                    {% if workout_session.duration_minutes %}
+                    <div class="mb-3">
+                        <label for="duration" class="form-label">Actual Duration (minutes)</label>
+                        <input type="number" class="form-control" id="duration" name="duration" placeholder="e.g., {{ workout_session.duration_minutes }}">
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Any additional notes about your workout..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Log Workout</button>
+                    <a href="{% url 'workout_day_detail' workout_session.workout_day.program.id workout_session.workout_day.id %}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Workout Tips</h5>
+            </div>
+            <div class="card-body">
+                <p>Record your actual performance to track your progress over time.</p>
+                <p>Be honest about your performance - this helps you improve!</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'workout_program/base.html' %}
+
+{% block title %}Home - Workout Program{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1 class="display-4">Welcome to Workout Program</h1>
+        <p class="lead">Plan, track, and achieve your fitness goals with our comprehensive workout programs.</p>
+
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-dumbbell fa-3x text-primary mb-3"></i>
+                        <h3>{{ total_programs }}</h3>
+                        <p>Workout Programs</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-running fa-3x text-success mb-3"></i>
+                        <h3>{{ total_exercises }}</h3>
+                        <p>Exercises</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-heartbeat fa-3x text-danger mb-3"></i>
+                        <h3>Personalized</h3>
+                        <p>Fitness Plans</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Quick Start</h5>
+            </div>
+            <div class="card-body">
+                <p>Browse our workout programs and find the perfect plan for your fitness goals.</p>
+                <a href="{% url 'program_list' %}" class="btn btn-primary">Browse Programs</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <h3>Featured Programs</h3>
+        <div class="row">
+            {% for program in featured_programs %}
+            <div class="col-md-4 mb-3">
+                <div class="card workout-card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ program.name }}</h5>
+                        <p class="card-text">{{ program.description|truncatewords:20 }}</p>
+                        <p class="text-muted">
+                            <small>
+                                <i class="fas fa-clock"></i> {{ program.duration_weeks }} weeks |
+                                <i class="fas fa-bolt"></i> Level {{ program.difficulty_level }}
+                            </small>
+                        </p>
+                        <a href="{% url 'program_detail' program.id %}" class="btn btn-primary">View Program</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p>No featured programs available.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

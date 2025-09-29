@@ -1,0 +1,72 @@
+{% extends 'workout_program/base.html' %}
+
+{% block title %}{{ program.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1>{{ program.name }}</h1>
+        <p class="lead">{{ program.description }}</p>
+
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5>Type</h5>
+                        <p>{{ program.get_program_type_display }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5>Duration</h5>
+                        <p>{{ program.duration_weeks }} weeks</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5>Difficulty</h5>
+                        <p>Level {{ program.difficulty_level }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3>Program Days</h3>
+        <div class="row">
+            {% for day in workout_days %}
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Day {{ day.day_number }}: {{ day.day_name }}</h5>
+                        <p class="card-text">{{ day.description|truncatewords:20 }}</p>
+                        <a href="{% url 'workout_day_detail' program.id day.id %}" class="btn btn-primary">View Day</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p>No workout days available for this program.</p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Program Info</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Created by:</strong> {{ program.created_by.username }}</p>
+                <p><strong>Created:</strong> {{ program.created_at|date:"M d, Y" }}</p>
+                <p><strong>Status:</strong>
+                    <span class="badge {% if program.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                        {% if program.is_active %}Active{% else %}Inactive{% endif %}
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
