@@ -5,18 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Image Generator</title>
     <style>
-      /* Add your CSS styling here */
-      body { font-family: Arial, sans-serif; margin: 20px; }
-      .container { max-width: 800px; margin: 0 auto; }
-      textarea, select, button { width: 100%; margin-bottom: 10px; padding: 8px; }
-      #imageDisplay { max-width: 100%; height: auto; margin-top: 20px; display: none; } /* Hidden initially */
-      .error { color: red; }
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        textarea, select, button { width: 100%; margin-bottom: 10px; padding: 8px; }
+        #imageDisplay { max-width: 100%; height: auto; margin-top: 20px; display: none; } /* Hidden initially */
+        .error { color: red; }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
     </style>
-</head>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Image Generator</title>
 </head>
 <body>
     <div class="container">
@@ -36,67 +35,127 @@
             <option value="3:4">3:4</option>
         </select>
 
-        <button id="generateBtn">Generate Image</button>
+        <!-- Button Group -->
+        <div class="button-group">
+            <button id="generateBtn">Generate Image</button>
+            <button id="downloadBtn" disabled>Download Image</button>
+        </div>
+
         <div id="errorDiv" class="error"></div>
         <img id="imageDisplay" alt="Generated Image" />
     </div>
 
     <script>
-        document.getElementById('generateBtn').addEventListener('click', async () => {
-            const prompt = document.getElementById('prompt').value.trim();
-            const negativePrompt = document.getElementById('negativePrompt').value.trim();
-            const aspectRatio = document.getElementById('aspectRatio').value;
-            const imageDisplay = document.getElementById('imageDisplay');
-            const errorDiv = document.getElementById('errorDiv');
+        // Get references to DOM elements
+        const generateBtn = document.getElementById('generateBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const imageDisplay = document.getElementById('imageDisplay');
+        const errorDiv = document.getElementById('errorDiv');
+        const promptInput = document.getElementById('prompt'); // Reference to the prompt input
 
-            if (!prompt) {
-                alert('Please enter a prompt.');
-                return;
-            }
+        // Variable to store the generated image URL
+        let currentImageUrl = null;
 
-            // Clear previous error and hide image
-            errorDiv.textContent = '';
-            imageDisplay.style.display = 'none';
+        // Add event listener for Generate Image button
+        if (generateBtn) { // Check if the element exists before adding listener
+            generateBtn.addEventListener('click', async () => {
+                const prompt = promptInput.value.trim(); // Get the prompt value
+                const negativePrompt = document.getElementById('negativePrompt').value.trim();
+                const aspectRatio = document.getElementById('aspectRatio').value;
 
-            try {
-                // Show loading state
-                document.getElementById('generateBtn').disabled = true;
-                document.getElementById('generateBtn').textContent = 'Generating...';
-
-                const response = await fetch('/generate-image', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ prompt, negative_prompt: negativePrompt, aspect_ratio: aspectRatio }),
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                if (!prompt) {
+                    alert('Please enter a prompt.');
+                    return;
                 }
 
-                // Read the image data as a Blob
-                const imageBlob = await response.blob();
+                // Clear previous error and hide image
+                errorDiv.textContent = '';
+                imageDisplay.style.display = 'none';
+                currentImageUrl = null; // Reset the URL
 
-                // Create a URL for the Blob
-                const imageUrl = URL.createObjectURL(imageBlob);
+                try {
+                    // Show loading state
+                    generateBtn.disabled = true;
+                    generateBtn.textContent = 'Generating...';
 
-                // Set the src attribute of the img element
-                imageDisplay.src = imageUrl;
+                    const response = await fetch('/generate-image', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ prompt, negative_prompt: negativePrompt, aspect_ratio: aspectRatio }),
+                    });
 
-                // Make sure the image is visible
-                imageDisplay.style.display = 'block';
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                    }
 
-            } catch (error) {
-                console.error('Error generating image:', error);
-                errorDiv.textContent = `Error: ${error.message}`;
-            } finally {
-                // Re-enable button and reset text
-                document.getElementById('generateBtn').disabled = false;
-                document.getElementById('generateBtn').textContent = 'Generate Image';
-            }
-        });
+                    // Read the image data as a blob
+                    const imageBlob = await response.blob();
+                    currentImageUrl = URL.createObjectURL(imageBlob);
+
+                    // Display the image
+                    imageDisplay.src = currentImageUrl;
+                    imageDisplay.style.display = 'block';
+
+                    // Enable the Download button
+                    downloadBtn.disabled = false;
+
+                } catch (error) {
+                    console.error('Error generating image:', error);
+                    errorDiv.textContent = `Error: ${error.message}`;
+                    downloadBtn.disabled = true; // Keep download button disabled on error
+                } finally {
+                     // Re-enable button and reset text
+                    generateBtn.disabled = false;
+                    generateBtn.textContent = 'Generate Image';
+                }
+            });
+        }
+
+        // Add event listener for Download Image button
+        if (downloadBtn) { // Check if the element exists before adding listener
+            downloadBtn.addEventListener('click', () => {
+                if (currentImageUrl) {
+                    // Create a filename based on the prompt
+                    let fileName = promptInput.value.trim();
+
+                    // Sanitize the filename: remove invalid characters for most OSes
+                    fileName = fileName.replace(/[^a-zA-Z0-9\s_\-]/g, '').replace(/\s+/g, '_');
+
+                    // If the prompt is empty or became empty after sanitization, use a default
+                    if (!fileName) {
+                        fileName = 'generated_image';
+                    }
+
+                    // Add a timestamp to avoid overwriting
+                    const now = new Date();
+                    const timestamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
+
+                    // Final filename
+                    const finalFileName = `${fileName}_${timestamp}.jpg`;
+
+                    // Create a temporary anchor element
+                    const link = document.createElement('a');
+                    link.href = currentImageUrl;
+                    link.download = finalFileName; // Use the generated filename
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+
+                    // Optional: Clean up the object URL after a short delay
+                    setTimeout(() => {
+                        URL.revokeObjectURL(currentImageUrl);
+                        currentImageUrl = null;
+                        downloadBtn.disabled = true; // Optionally disable again after download
+                    }, 1000);
+
+                    // Inform the user (optional)
+                    alert(`Image downloaded as "${finalFileName}". Your browser may have saved it to your Downloads folder.`);
+                }
+            });
+        }
     </script>
 </body>
 </html>
