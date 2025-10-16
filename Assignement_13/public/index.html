@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Generator</title>
+    <style>
+      /* Add your CSS styling here */
+      body { font-family: Arial, sans-serif; margin: 20px; }
+      .container { max-width: 800px; margin: 0 auto; }
+      textarea, select, button { width: 100%; margin-bottom: 10px; padding: 8px; }
+      #imageDisplay { max-width: 100%; height: auto; margin-top: 20px; display: none; } /* Hidden initially */
+      .error { color: red; }
+    </style>
+</head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Generator</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Generate Image with AI</h1>
+        <label for="prompt">Prompt:</label>
+        <textarea id="prompt" placeholder="Enter your prompt here..."></textarea>
+
+        <label for="negativePrompt">Negative Prompt (Optional):</label>
+        <textarea id="negativePrompt" placeholder="Enter things to avoid..."></textarea>
+
+        <label for="aspectRatio">Aspect Ratio:</label>
+        <select id="aspectRatio">
+            <option value="4:3">4:3</option>
+            <option value="16:9">16:9</option>
+            <option value="9:16">9:16</option>
+            <option value="1:1">1:1 (Square)</option>
+            <option value="3:4">3:4</option>
+        </select>
+
+        <button id="generateBtn">Generate Image</button>
+        <div id="errorDiv" class="error"></div>
+        <img id="imageDisplay" alt="Generated Image" />
+    </div>
+
+    <script>
+        document.getElementById('generateBtn').addEventListener('click', async () => {
+            const prompt = document.getElementById('prompt').value.trim();
+            const negativePrompt = document.getElementById('negativePrompt').value.trim();
+            const aspectRatio = document.getElementById('aspectRatio').value;
+            const imageDisplay = document.getElementById('imageDisplay');
+            const errorDiv = document.getElementById('errorDiv');
+
+            if (!prompt) {
+                alert('Please enter a prompt.');
+                return;
+            }
+
+            // Clear previous error and hide image
+            errorDiv.textContent = '';
+            imageDisplay.style.display = 'none';
+
+            try {
+                // Show loading state
+                document.getElementById('generateBtn').disabled = true;
+                document.getElementById('generateBtn').textContent = 'Generating...';
+
+                const response = await fetch('/generate-image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt, negative_prompt: negativePrompt, aspect_ratio: aspectRatio }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                }
+
+                // Read the image data as a Blob
+                const imageBlob = await response.blob();
+
+                // Create a URL for the Blob
+                const imageUrl = URL.createObjectURL(imageBlob);
+
+                // Set the src attribute of the img element
+                imageDisplay.src = imageUrl;
+
+                // Make sure the image is visible
+                imageDisplay.style.display = 'block';
+
+            } catch (error) {
+                console.error('Error generating image:', error);
+                errorDiv.textContent = `Error: ${error.message}`;
+            } finally {
+                // Re-enable button and reset text
+                document.getElementById('generateBtn').disabled = false;
+                document.getElementById('generateBtn').textContent = 'Generate Image';
+            }
+        });
+    </script>
+</body>
+</html>
