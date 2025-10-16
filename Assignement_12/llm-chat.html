@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LM Studio Chat Interface</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* --- CSS REMAINS EXACTLY THE SAME AS YOUR ORIGINAL FILE --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            height: 90vh;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo i {
+            font-size: 28px;
+            color: #4cc9f0;
+        }
+        .logo h1 {
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .model-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 50px;
+        }
+        .model-selector select {
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            outline: none;
+            cursor: pointer;
+        }
+        .api-key-container {
+            display: none; /* Hide the API key container */
+        }
+        .api-info {
+            display: none; /* Hide the API info section */
+        }
+        .chat-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 250px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-y: auto;
+        }
+        .model-list {
+            list-style: none;
+        }
+        .model-item {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .model-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .model-item.active {
+            background: rgba(76, 201, 240, 0.3);
+            border-left: 3px solid #4cc9f0;
+        }
+        .model-item i {
+            color: #4cc9f0;
+        }
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .message {
+            max-width: 80%;
+            padding: 15px;
+            border-radius: 18px;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .user-message {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #4cc9f0, #4361ee);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+        .bot-message {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-bottom-left-radius: 5px;
+        }
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .message-header i {
+            font-size: 18px;
+        }
+        .input-area {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .input-area input {
+            flex: 1;
+            padding: 15px 20px;
+            border-radius: 30px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+        .input-area input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        .input-area button {
+            background: #4cc9f0;
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        .input-area button:hover {
+            background: #3aa8c9;
+            transform: scale(1.05);
+        }
+        .typing-indicator {
+            display: none;
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 15px;
+            border-radius: 18px;
+            margin-bottom: 15px;
+            border-bottom-left-radius: 5px;
+        }
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.7);
+            margin: 0 2px;
+            animation: typing 1.4s infinite;
+        }
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+                padding: 20px 10px;
+            }
+            .model-name {
+                display: none;
+            }
+            .model-item {
+                justify-content: center;
+            }
+            .message {
+                max-width: 90%;
+            }
+            .api-key-input {
+                width: 150px;
+            }
+            .api-info {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-robot"></i>
+                <h1>LM Studio Chat</h1>
+            </div>
+            <div class="model-selector">
+                <i class="fas fa-brain"></i>
+                <!-- Model selection dropdown REMOVED -->
+                <!-- Hidden API Key Container for LM Studio -->
+                <div class="api-key-container">
+                    <input type="password" id="api-key-input" class="api-key-input" placeholder="Enter API Key">
+                    <div class="api-key-options">
+                        <label class="api-key-option">
+                            <input type="radio" name="api-option" id="api-input" checked>
+                            <span>Input Key</span>
+                        </label>
+                        <label class="api-key-option">
+                            <input type="radio" name="api-option" id="api-env">
+                            <span>Use Env Var</span>
+                        </label>
+                    </div>
+                    <div id="api-status" class="api-status">No API</div>
+                </div>
+            </div>
+        </header>
+        <div class="chat-container">
+            <div class="sidebar">
+                <!-- Model list sidebar -->
+                <ul class="model-list" id="model-list">
+                    <li><i class="fas fa-spinner fa-spin"></i> Loading models...</li>
+                </ul>
+                <div class="api-info">
+                    <h3>LM Studio Instructions</h3>
+                    <p>Select a model from the sidebar. Ensure the corresponding model is loaded in LM Studio.</p>
+                </div>
+            </div>
+            <div class="chat-area">
+                <div class="messages" id="messages">
+                    <div class="message bot-message" id="initial-message">
+                        <div class="message-header">
+                            <i class="fas fa-robot"></i>
+                            <span>Loading...</span>
+                        </div>
+                        <div class="message-content">
+                            Initializing... Please wait for models to load.
+                        </div>
+                    </div>
+                </div>
+                <div class="typing-indicator" id="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div class="input-area">
+                    <input type="text" id="message-input" placeholder="Type your message here..." disabled>
+                    <button id="send-button" disabled><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const messagesContainer = document.getElementById('messages');
+            const messageInput = document.getElementById('message-input');
+            const sendButton = document.getElementById('send-button');
+            const typingIndicator = document.getElementById('typing-indicator');
+            // const modelSelect = document.getElementById('model-select'); // REMOVED: No dropdown element
+            const modelListSidebar = document.getElementById('model-list');
+            const initialMessage = document.getElementById('initial-message');
+
+            // --- Updated Models Object (Will be populated dynamically) ---
+            let models = {};
+            let currentModel = '';
+
+            // --- Function to fetch models from the backend ---
+            async function fetchModelsFromServer() {
+                try {
+                    console.log('Fetching model list from server...');
+                    const response = await fetch('/api/models');
+                    if (!response.ok) {
+                        throw new Error(`Server error: ${response.status}`);
+                    }
+                    const modelIds = await response.json();
+                    console.log('Model IDs received from server:', modelIds);
+
+                    // Clear existing items in sidebar
+                    modelListSidebar.innerHTML = '';
+
+                    // Update the models object dynamically
+                    models = {};
+                    modelIds.forEach((modelId, index) => {
+                        // Generate a simple name from the ID (e.g., remove quantization tags)
+                        const displayName = modelId.split('/').pop().replace(/[\._-](Q[0-9]+_[A-Za-z0-9]+|GGUF|GGML|F16|Q4_K_M|etc\.)/g, '').replace(/[\._-]/g, ' ').replace(/\s+/g, ' ').trim();
+                        const icons = ['fa-robot', 'fa-brain', 'fa-cogs', 'fa-microchip', 'fa-star', 'fa-code', 'fa-terminal'];
+                        const colors = ['#4cc9f0', '#f72585', '#7209b7', '#3a86ff', '#ff9e00', '#ff006e', '#8338ec'];
+                        models[modelId] = {
+                            name: displayName,
+                            icon: icons[index % icons.length],
+                            color: colors[index % colors.length]
+                        };
+
+                        // Add item to sidebar
+                        const listItem = document.createElement('li');
+                        listItem.classList.add('model-item');
+                        if (index === 0) {
+                            listItem.classList.add('active');
+                            currentModel = modelId; // Set first model as default
+                        }
+                        listItem.dataset.model = modelId;
+                        listItem.innerHTML = `<i class="fas ${models[modelId].icon}"></i><span class="model-name">${models[modelId].name}</span>`;
+                        modelListSidebar.appendChild(listItem);
+                    });
+
+                    console.log('Models object updated:', models);
+                    console.log('Current model set to:', currentModel);
+
+                    // Enable input fields after models are loaded
+                    messageInput.disabled = false;
+                    sendButton.disabled = false;
+
+                    // Update initial message
+                    if (initialMessage) {
+                        const modelInfo = models[currentModel];
+                        initialMessage.querySelector('.message-header span').textContent = modelInfo.name;
+                        initialMessage.querySelector('.message-header i').className = `fas ${modelInfo.icon}`;
+                        initialMessage.querySelector('.message-content').textContent =
+                            `Hello! I'm ${modelInfo.name}. How can I assist you today?`;
+                    }
+
+                    // Add event listeners for model selection after populating
+                    addModelSelectionListeners();
+
+                } catch (error) {
+                    console.error('Failed to load models:', error);
+                    // modelListSidebar.innerHTML = '<li>Failed to load models</li>'; // Keep original loading message or show error
+                    if (initialMessage) {
+                        initialMessage.querySelector('.message-content').textContent = 'Failed to load models. Please check the server and LM Studio.';
+                    }
+                }
+            }
+
+            // --- Function to add event listeners for model selection ---
+            function addModelSelectionListeners() {
+                // Change model when sidebar item is clicked
+                document.querySelectorAll('.model-item').forEach(item => {
+                    item.removeEventListener('click', handleSidebarClick); // Remove old listener if any
+                    item.addEventListener('click', handleSidebarClick);
+                });
+            }
+
+            // --- Handler for sidebar click ---
+            function handleSidebarClick() {
+                const model = this.dataset.model;
+                currentModel = model; // Update current model variable
+                console.log('Model changed via sidebar to:', currentModel);
+                // Update active state
+                document.querySelectorAll('.model-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                // Update the initial message
+                updateInitialMessage();
+            }
+
+            // --- Function to update the initial message with the correct model ---
+            function updateInitialMessage() {
+                if (initialMessage && models[currentModel]) {
+                    const modelInfo = models[currentModel];
+                    initialMessage.querySelector('.message-header span').textContent = modelInfo.name;
+                    initialMessage.querySelector('.message-header i').className = `fas ${modelInfo.icon}`;
+                    initialMessage.querySelector('.message-content').textContent =
+                        `Hello! I'm ${modelInfo.name}. How can I assist you today?`;
+                }
+            }
+
+            // --- Function to add a message to the chat ---
+            function addMessage(content, isUser = false, model = currentModel) {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message');
+                messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
+
+                const modelInfo = models[model] || models[currentModel] || { name: 'Unknown Model', icon: 'fa-question', color: '#ccc' };
+                const header = document.createElement('div');
+                header.classList.add('message-header');
+                header.innerHTML = `<i class="fas ${modelInfo.icon}"></i><span>${isUser ? 'You' : modelInfo.name}</span>`;
+                const contentDiv = document.createElement('div');
+                contentDiv.classList.add('message-content');
+                contentDiv.textContent = content;
+
+                messageDiv.appendChild(header);
+                messageDiv.appendChild(contentDiv);
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            // --- Function to get bot response from the backend (LM Studio) ---
+            async function getBotResponse(userMessage, model) {
+                // Show typing indicator
+                typingIndicator.style.display = 'flex';
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+                try {
+                    console.log(`Sending message to backend for model: ${model}`);
+                    const response = await fetch('/api/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            model: model,
+                            message: userMessage
+                            // No API key needed for LM Studio
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || `API Error: ${response.status}`);
+                    }
+                    const result = await response.json();
+                    console.log('Received response from backend:', result.response);
+                    typingIndicator.style.display = 'none';
+                    addMessage(result.response, false, model);
+                } catch (error) {
+                    console.error("API Error:", error);
+                    typingIndicator.style.display = 'none';
+                    addMessage(`Error: ${error.message}`, false);
+                }
+            }
+
+            // --- Send message when button is clicked ---
+            sendButton.addEventListener('click', async function() {
+                const message = messageInput.value.trim();
+                if (message && currentModel) { // Check if model is selected
+                    addMessage(message, true);
+                    messageInput.value = '';
+                    await getBotResponse(message, currentModel);
+                }
+            });
+
+            // --- Send message when Enter is pressed ---
+            messageInput.addEventListener('keypress', async function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) { // Prevent Enter+Shift (new line) from sending
+                    e.preventDefault(); // Prevent default Enter behavior (new line)
+                    sendButton.click();
+                }
+            });
+
+            // --- Initialize: Fetch models from server ---
+            fetchModelsFromServer();
+
+        });
+    </script>
+</body>
+</html>
